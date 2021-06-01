@@ -1,10 +1,11 @@
 # Classification
 - Dimensionality reduction
--- Projection
--- Manifold learning
---- Linear
------ PCA
---- Non-linear
+Projection
+
+Manifold learning
+    Linear
+        PCA
+    Non-linear
 
 - Clustering
 
