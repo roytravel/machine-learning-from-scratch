@@ -4,6 +4,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from sklearn.datasets import load_digits
 from sklearn import datasets
+from sklearn.decomposition import PCA
 
 """
 Abstract: Find the hyperplane closet to the data, and then projected onto the hyperplane.
@@ -11,7 +12,7 @@ Abstract: Find the hyperplane closet to the data, and then projected onto the hy
 Reference: https://excelsior-cjh.tistory.com/167
 """
 
-class PCA(object):
+class Handmade_PCA(object):
     '''
     PCA is divided by two method: eigen-value-decomposition, singular-value-decomposition
     scikit learn use SVD because it need not store the covariance matrix on the memory
@@ -53,19 +54,31 @@ class PCA(object):
         return np.dot(X, self.components.T)
 
 
-def visualizer(X_projected, y, plot=True):
-    plt.scatter(X_projected[:, 0], X_projected[:, 1], c=y, edgecolor='none', alpha=0.8,cmap=plt.cm.get_cmap('viridis', 3))
+class Library_PCA(object):
+    def __init__(self, n_components):
+        self.n_components = n_components
+
+
+    def pca(self, X):
+        pca = PCA(self.n_components)
+        X_tf = pca.fit_transform(X)
+        return X_tf
+
+
+def visualizer(X_projected, y, flag):
+    fig = plt.figure()
+    scatter = plt.scatter(X_projected[:, 0], X_projected[:, 1], c=y, edgecolor='none', alpha=0.8, cmap=plt.cm.get_cmap('viridis', 3))
+    handles, labels = scatter.legend_elements()
+    plt.legend(handles, np.unique(y))
     plt.xlabel('Principal Component 1')
     plt.ylabel('Principal Component 2')
-    plt.title('Principal Component Analysis')
+    plt.title(flag)
     plt.colorbar()
-    plt.savefig('pca_wine_dataset')
-    if plot:
-        plt.show()
+    plt.savefig(flag)
+    fig.show()
 
 
 def main():
-
     # dataset 1
     # X, y = load_digits(return_X_y=True)
     # ind = np.arange(len(X))
@@ -77,11 +90,21 @@ def main():
     X = data.data
     y = data.target
 
-    pca = PCA(2)
-    pca.fit(X)
-    X_projected = pca.transform(X)
+    # Handmade Principal Components Analysis
+    handmade_pca = Handmade_PCA(2)
+    handmade_pca.fit(X)
+    X_projected = handmade_pca.transform(X)
     print(f"[*] Dimension reduction : {X.shape} -> {X_projected.shape}")
-    visualizer(X_projected, y, True)
+
+    # Library Principal Compoents Analysis
+    library_pca = Library_PCA(2)
+    X_tf = library_pca.pca(X)
+
+    # Visualization
+    visualizer(X_projected, y, "Handmade PCA")
+    visualizer(X_tf, y, "Library PCA")
+    plt.show()
+
 
 
 if __name__ == "__main__":
