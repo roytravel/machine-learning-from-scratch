@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
+# Reference: https://github.com/python-engineer/MLfromscratch/blob/master/mlfromscratch/linear_regression.py
+
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
