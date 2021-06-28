@@ -1,16 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
-
-# In[82]:
-
-
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-from sklearn.datasets import load_digits
-
-
-# In[83]:
+from sklearn.datasets import make_regression
 
 
 class LinearRegression(object):
@@ -46,9 +39,6 @@ class LinearRegression(object):
         return y_pred
 
 
-# In[84]:
-
-
 def r2_score(y_true, y_pred):
     """
     # 결정 계수 계산
@@ -64,15 +54,10 @@ def r2_score(y_true, y_pred):
 def mean_squared_error(y_true, y_pred):
     return np.mean((y_true - y_pred) ** 2)
 
-def plot(X, X_train, y_train, X_test, y_test)
-
-
-# In[102]:
-
 
 def main():
     # 데이터셋 로드
-    X, y = datasets.make_regression(n_samples=1000, n_features=1, noise=20, random_state=2021)
+    X, y = make_regression(n_samples=1000, n_features=1, noise=20, random_state=2021)
 
     # 데이터셋 분할
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=2021)
@@ -106,15 +91,6 @@ def main():
     plt.show()
 
 
-# In[103]:
-
-
 if __name__ == "__main__":
     main()
-
-
-# In[ ]:
-
-
-
 
