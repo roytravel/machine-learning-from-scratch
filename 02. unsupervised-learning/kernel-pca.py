@@ -8,6 +8,12 @@ from sklearn.datasets import load_digits
 import matplotlib
 import matplotlib.pyplot as plt
 
+"""
+Abstract: Find the kerenl to solve non-linear problem in PCA"
+Reference: https://github.com/susobhang70/kernel_pca_lda/blob/master/KPCA_KLDA.py
+
+"""
+
 
 class LibraryKPCA(object):
     def __init__(self, n_components):
