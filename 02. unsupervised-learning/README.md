@@ -6,6 +6,7 @@
   - Linear
     - PCA
   - Non-linear
+    - Kernel PCA
 
 **Clustering**
 
