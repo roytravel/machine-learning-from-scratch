@@ -14,9 +14,10 @@ class Kmeans(object):
     # 05. Get cluster labels to classify the sample (샘플 분류를 위한 클러스터 인덱스 확인)
     # 06. Predict sample (cluster indicies 반환)
 
-    def __init__(self, k=2, max_iters=500):
+    def __init__(self, k=2, max_iters=500, plot_steps=False):
         self.k = k
         self.max_iters = max_iters
+        self.plot_steps = plot_steps
 
 
     def _init_random_centroids(self, X):
@@ -43,7 +44,7 @@ class Kmeans(object):
         return centroids
 
         
-    def _create_cluster(self, centorids, X):
+    def _create_cluster(self, X):
         
         # Get the number of sample from X (X로부터 샘플 개수 획득)
         n_sample = np.shape(X)[0]
@@ -52,13 +53,13 @@ class Kmeans(object):
         clusters = [[] for _ in range(self.k)]
 
         for idx, sample in enumerate(X):
-            closet_centroid_idx = self._get_closet_centroid_idx(centorids, sample)
+            closet_centroid_idx = self._get_closet_centroid_idx(sample)
             clusters[closet_centroid_idx].append(idx)
 
         return clusters
 
 
-    def _get_closet_centroid_idx(self, centroids, sample):
+    def _get_closet_centroid_idx(self, sample):
 
         # # Initialize closet centroid index (가장 가까운 중심점 번호 초기화)
         # closet_centroid_idx = 0
@@ -78,16 +79,16 @@ class Kmeans(object):
         #         closet_centroids_idx = idx
 
         # Easy Version.
-        distances = [np.sqrt(np.sum((centroid - sample) ** 2)) for centroid in centroids]
+        distances = [np.sqrt(np.sum((centroid - sample) ** 2)) for centroid in self.centroids]
         closet_centroid_idx = np.argmin(distances)
             
         return closet_centroid_idx
 
 
-    def _calc_new_centroid(self, clusters, X):
+    def _calc_new_centroid(self, X):
         n_features = np.shape(X)[1]
         centroids = np.zeros((self.k, n_features))
-        for idx, cluster in enumerate(clusters):
+        for idx, cluster in enumerate(self.clusters):
             cluster_mean = np.mean(X[cluster], axis=0)
             centroids[idx] = cluster_mean
         return centroids
@@ -95,40 +96,62 @@ class Kmeans(object):
 
     def _get_cluster_label(self, clusters, X):
         y_pred = np.zeros(np.shape(X)[0])
-        for cluster_idx, cluster in enumerate(clusters):
+        for cluster_idx, cluster in enumerate(self.clusters):
             for sample_idx in cluster:
                 y_pred[sample_idx] = cluster_idx
         return y_pred
 
 
     def predict(self, X):
-        centroids = self._init_random_centroids(X)
 
+        # Initialize the centroid (중심점 랜덤 초기화)
+        self.centroids = self._init_random_centroids(X)
+
+        # Optimize clusters 
         for _ in range(self.max_iters):
+            self.clusters = self._create_cluster(X)
 
-            clusters = self._create_cluster(centroids, X)
+            if self.plot_steps:
+                self.plot(X)
 
-            prev_centroids = centroids
+            prev_centroids = self.centroids
+            self.centroids = self._calc_new_centroid(X)
 
-            new_centroids = self._calc_new_centroid(clusters, X)
-
-            diff = centroids - prev_centroids
+            diff = self.centroids - prev_centroids
             if not diff.any():
                 break
 
-        return self._get_cluster_label(clusters, X)
+            if self.plot_steps:
+                self.plot(X)
+
+        return self._get_cluster_label(self.clusters, X)
     
+
+    def plot(self, X):
+        fig, ax = plt.subplots(figsize=(12, 8))
+
+        for i, index in enumerate(self.clusters):
+            point = X[index].T
+            ax.scatter(*point)
+        
+        for point in self.centroids:
+            ax.scatter(*point, marker="x", color="black", linewidth=2)
+
+        plt.show()
+
 
 def main():
     
     # It usally used to create virtual data on clustering (주로 클러스터링용 가상 데이터 생성에 사용)
     # center: centroids, n_features: independent variable
-    X, y = make_blobs(centers=2, n_samples=50, n_features=2, shuffle=True, random_state=40)
+    X, y = make_blobs(centers=2, n_samples=10000, n_features=2, shuffle=True)
 
-    K = Kmeans(k=2, max_iters=500)
+    K = Kmeans(k=2, max_iters=500, plot_steps=True)
 
     cluster_indexs = K.predict(X)
     print (cluster_indexs)
+
+    K.plot(X)
 
 
 if __name__ == "__main__":
